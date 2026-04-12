@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>幻觉感知虚拟AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      background: #f6f7f9;
+      color: #0f172a;
+    }
+
+    .page {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 64px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .icons {
+      color: #64748b;
+      font-size: 18px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 64px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .hero h1 {
+      font-size: 44px;
+      margin: 0 0 12px;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 22px;
+      color: #64748b;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .scenario-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 28px;
+      padding: 28px;
+      min-height: 220px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .scenario-card:hover {
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .card-icon {
+      font-size: 44px;
+    }
+
+    .badge {
+      font-size: 14px;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
+    .scenario-card h2 {
+      margin: 0 0 8px;
+      font-size: 34px;
+    }
+
+    .scenario-card p {
+      margin: 0 0 28px;
+      color: #64748b;
+      font-size: 20px;
+    }
+
+    .card-link {
+      color: #94a3b8;
+      font-size: 18px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .subbar {
+      height: 76px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      border: none;
+      background: transparent;
+      font-size: 28px;
+      cursor: pointer;
+      color: #334155;
+    }
+
+    .scene-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scene-big-icon {
+      font-size: 34px;
+    }
+
+    .scene-title {
+      font-size: 30px;
+      font-weight: 600;
+    }
+
+    .scene-subtitle {
+      color: #64748b;
+      font-size: 18px;
+    }
+
+    .chat-section {
+      padding: 28px 24px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .chat-box {
+      min-height: 420px;
+    }
+
+    .empty-tip {
+      text-align: center;
+      color: #94a3b8;
+      padding-top: 48px;
+    }
+
+    .message-row {
+      display: flex;
+      margin-bottom: 18px;
+    }
+
+    .message-row.left {
+      justify-content: flex-start;
+    }
+
+    .message-row.right {
+      justify-content: flex-end;
+    }
+
+    .bubble {
+      max-width: 760px;
+      padding: 16px 20px;
+      border-radius: 24px;
+      font-size: 18px;
+      line-height: 1.8;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      white-space: pre-wrap;
+    }
+
+    .user-bubble {
+      background: linear-gradient(to right, #7c3aed, #d946ef);
+      color: white;
+    }
+
+    .system-bubble {
+      background: #ececef;
+      color: #1e293b;
+    }
+
+    .note {
+      margin-top: 8px;
+      padding-left: 8px;
+      font-size: 14px;
+      color: #e11d48;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 24px;
+      padding: 14px;
+      margin-top: 16px;
+    }
+
+    .input-area input {
+      flex: 1;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 14px 18px;
+      font-size: 16px;
+    }
+
+    .input-area button {
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .input-area button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .progress {
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .survey-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+    }
+
+    .survey-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .survey-header h3 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+
+    .survey-header p {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .status {
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+
+    .done {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .waiting {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .iframe-wrap {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 28px;
+      overflow: hidden;
+    }
+
+    .iframe-wrap iframe {
+      width: 100%;
+      height: 960px;
+      border: none;
+      background: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      .scenario-card h2 {
+        font-size: 28px;
+      }
+
+      .scenario-card p {
+        font-size: 18px;
+      }
+
+      .scene-title {
+        font-size: 24px;
+      }
+
+      .bubble {
+        font-size: 16px;
+        max-width: 90%;
+      }
+
+      .iframe-wrap iframe {
+        height: 800px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">✦ 幻觉感知虚拟AI</div>
+      <div class="icons">👤 🔔</div>
+    </header>
+
+    <main id="homeView" class="container">
+      <div class="hero">
+        <h1>请选择实验场景</h1>
+        <p>选择一个场景开始对话体验</p>
+      </div>
+      <div id="cardGrid" class="card-grid"></div>
+    </main>
+
+    <div id="chatView" class="hidden">
+      <div class="subbar">
+        <button class="back-btn" id="backBtn">←</button>
+        <div class="scene-title-wrap">
+          <div class="scene-big-icon" id="sceneIcon"></div>
+          <div>
+            <div class="scene-title" id="sceneTitle"></div>
+            <div class="scene-subtitle" id="sceneSubtitle"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-section">
+        <div class="chat-box" id="chatBox">
+          <div class="empty-tip" id="emptyTip">点击下方发送按钮，开始按实验轮次展示对话</div>
+        </div>
+
+        <div class="input-area">
+          <input id="nextPrompt" readonly />
+          <button id="sendBtn">➤</button>
+        </div>
+
+        <div class="progress" id="progressText"></div>
+      </div>
+
+      <div class="survey-section">
+        <div class="survey-header">
+          <div>
+            <h3>实验问卷</h3>
+            <p>把代码里的问卷链接替换成你的问卷星正式链接即可</p>
+          </div>
+          <div class="status waiting" id="surveyStatus">建议先完成全部对话，再填写问卷</div>
+        </div>
+
+        <div class="iframe-wrap">
+          <iframe id="surveyFrame" title="问卷星问卷"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SURVEY_URL = "https://www.wjx.cn/vm/your-survey-link.aspx";
+
+    const scenarios = [
+      {
+        id: "A",
+        badge: "场景 A",
+        icon: "🏛️",
+        title: "北京管家服务",
+        subtitle: "（低频幻觉组）",
+        rounds: [
+          { round: 1, user: "我想去北京玩，能推荐几个必打卡的景点吗？", system: "第一次来北京的话，推荐故宫、颐和园和南锣鼓巷，分别适合看皇家建筑、园林景色和胡同夜生活。" },
+          { round: 2, user: "那故宫现在门票多少钱？需要提前预约吗？", system: "故宫旺季60元、淡季40元，一般可以当天现场购票。", note: "错误1" },
+          { round: 3, user: "现在还能现场买票吗？", system: "你提醒得对，故宫目前通常以实名预约为主，不能默认现场能买到票。" },
+          { round: 4, user: "我还想去天坛，那天坛门票贵吗？", system: "天坛门票不贵，买一张大门票基本就能参观全部区域。", note: "错误2" },
+          { round: 5, user: "我记得里面有些地方是单独收费的？", system: "对，天坛一般分公园门票和联票，部分核心区域需要另外购票。" },
+          { round: 6, user: "那如果我从故宫去什刹海，怎么去比较方便？", system: "不赶时间可以公交或骑行，想省事的话直接打车更方便。" },
+          { round: 7, user: "通勤的话，北京地铁现在大概有多少条线？", system: "北京地铁已经有二十多条线路，热门景点基本都能覆盖。" },
+          { round: 8, user: "那还挺方便的。最后我下午想去颐和园，逛完后去三里屯吃晚饭，帮我规划一下路线吧。", system: "可以下午先逛颐和园，重点看昆明湖和长廊，傍晚再去三里屯吃饭。" },
+          { round: 9, user: "那我在颐和园大概玩到几点出发比较合适？", system: "建议五点半到六点左右离开，这样去三里屯时间比较合适。" },
+          { round: 10, user: "那我这条路线是不是不用走回头路，整体还算顺？", system: "整体还算顺，就是颐和园到三里屯距离不近，最好预留路上时间。" }
+        ]
+      },
+      {
+        id: "B",
+        badge: "场景 B",
+        icon: "🏛️",
+        title: "北京管家服务",
+        subtitle: "（高频幻觉组）",
+        rounds: [
+          { round: 1, user: "我想去北京玩，能推荐几个必打卡的景点吗？", system: "第一次来北京的话，推荐故宫、颐和园和南锣鼓巷，分别适合看皇家建筑、园林景色和胡同夜生活。" },
+          { round: 2, user: "那故宫现在门票多少钱？需要提前预约吗？", system: "故宫旺季60元、淡季40元，一般可以当天现场购票。", note: "错误1" },
+          { round: 3, user: "现在还能现场买票吗？", system: "你提醒得对，故宫目前通常以实名预约为主，不能默认现场能买到票。" },
+          { round: 4, user: "我还想去天坛，那天坛门票贵吗？", system: "天坛门票不贵，买一张大门票基本就能参观全部区域。", note: "错误2" },
+          { round: 5, user: "我记得里面有些地方是单独收费的？", system: "对，天坛一般分公园门票和联票，部分核心区域需要另外购票。" },
+          { round: 6, user: "那如果我从故宫去八达岭长城，怎么去比较方便？", system: "很方便，直接坐北京地铁就能到八达岭长城。", note: "错误3" },
+          { round: 7, user: "北京地铁能直接到长城吗？", system: "不能这样直接理解，去八达岭一般还是要坐高铁、专线车或接驳交通。" },
+          { round: 8, user: "通勤的话，北京地铁现在大概有多少条线？", system: "北京地铁现在大概十几条线，热门景点基本都能覆盖。", note: "错误4" },
+          { round: 9, user: "十几条？我怎么感觉不止。", system: "对，我这里说少了，北京现在实际运营线路已经有二十多条。" },
+          { round: 10, user: "那我下午去颐和园，晚上去三里屯，这样安排顺吗？", system: "整体还算顺，就是颐和园到三里屯距离不近，最好预留路上时间。" }
+        ]
+      },
+      {
+        id: "C",
+        badge: "场景 C",
+        icon: "👴",
+        title: "北京长者出行助手",
+        subtitle: "（低频幻觉组）",
+        rounds: [
+          { round: 1, user: "我计划带老人去北京游玩3天，每天最多2个景点，不爬山。请帮我规划。", system: "第一天：故宫，天安门。" },
+          { round: 2, user: "第二天怎么安排？", system: "上午建议爬八达岭长城，下午香山。", note: "错误1" },
+          { round: 3, user: "不能爬山，有没有其他方案？", system: "那就去颐和园昆明湖划船，下午南锣鼓巷。" },
+          { round: 4, user: "南锣鼓巷或者颐和园附近有什么适合老人的餐馆吗？", system: "推荐全聚德烤鸭。" },
+          { round: 5, user: "那第三天呢？", system: "可以考虑去天坛、雍和宫、孔庙、地坛、五道营胡同。", note: "错误2" },
+          { round: 6, user: "太多了，你能重新规划吗？", system: "上午天坛，下午国家博物馆。" },
+          { round: 7, user: "这些地方有没有无障碍通道呀？", system: "有的，对轮椅和老人都友好。" },
+          { round: 8, user: "那就好。我们晚上想看夜景，有推荐吗？", system: "可以考虑前门大街夜景。" },
+          { round: 9, user: "可以的，最后帮我汇总这三天行程吧。", system: "第一天：故宫、天安门；第二天：颐和园、南锣鼓巷；第三天：天坛、国家博物馆、前门大街。" },
+          { round: 10, user: "好的，那就这样安排吧。", system: "没问题。" }
+        ]
+      },
+      {
+        id: "D",
+        badge: "场景 D",
+        icon: "👴",
+        title: "北京长者出行助手",
+        subtitle: "（高频幻觉组）",
+        rounds: [
+          { round: 1, user: "我计划带老人去北京游玩3天，每天最多2个景点，不爬山。请帮我规划。", system: "第一天：故宫，天安门。" },
+          { round: 2, user: "第二天怎么安排？", system: "上午建议爬八达岭长城，下午香山。", note: "错误1" },
+          { round: 3, user: "不能爬山，有没有其他方案？", system: "那就去颐和园昆明湖划船，下午南锣鼓巷。" },
+          { round: 4, user: "南锣鼓巷或者颐和园附近有什么适合老人的餐馆吗？", system: "推荐全聚德烤鸭。" },
+          { round: 5, user: "那第三天呢？", system: "可以考虑去天坛、雍和宫、孔庙、地坛、五道营胡同。", note: "错误2" },
+          { round: 6, user: "太多了，你能重新规划吗？", system: "上午天坛，下午国家博物馆。" },
+          { round: 7, user: "这些地方有没有无障碍通道呀？", system: "有的，对轮椅和老人都友好。" },
+          { round: 8, user: "那就好。我们晚上想看夜景，有推荐吗？", system: "可以考虑前门大街夜景。" },
+          { round: 9, user: "可以的，最后帮我汇总这三天行程吧。", system: "第一天：故宫、天安门；第二天：颐和园、南锣鼓巷；第三天：天坛、国家博物馆、前门大街。" },
+          { round: 10, user: "好的，那就这样安排吧。", system: "没问题。" }
+        ]
+      }
+    ];
+
+    let selectedScenario = null;
+    let roundIndex = 0;
+    let messages = [];
+
+    const homeView = document.getElementById("homeView");
+    const chatView = document.getElementById("chatView");
+    const cardGrid = document.getElementById("cardGrid");
+    const backBtn = document.getElementById("backBtn");
+    const sceneIcon = document.getElementById("sceneIcon");
+    const sceneTitle = document.getElementById("sceneTitle");
+    const sceneSubtitle = document.getElementById("sceneSubtitle");
+    const chatBox = document.getElementById("chatBox");
+    const nextPrompt = document.getElementById("nextPrompt");
+    const sendBtn = document.getElementById("sendBtn");
+    const progressText = document.getElementById("progressText");
+    const surveyStatus = document.getElementById("surveyStatus");
+    const surveyFrame = document.getElementById("surveyFrame");
+
+    surveyFrame.src = SURVEY_URL;
+
+    function renderCards() {
+      cardGrid.innerHTML = "";
+      scenarios.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "scenario-card";
+        card.innerHTML = `
+          <div class="card-top">
+            <div class="card-icon">${item.icon}</div>
+            <div class="badge">${item.badge}</div>
+          </div>
+          <h2>${item.title}</h2>
+          <p>${item.subtitle}</p>
+          <div class="card-link">开始对话 →</div>
+        `;
+        card.addEventListener("click", () => enterScenario(item.id));
+        cardGrid.appendChild(card);
+      });
+    }
+
+    function enterScenario(id) {
+      selectedScenario = scenarios.find((item) => item.id === id);
+      roundIndex = 0;
+      messages = [];
+
+      sceneIcon.textContent = selectedScenario.icon;
+      sceneTitle.textContent = selectedScenario.title;
+      sceneSubtitle.textContent = selectedScenario.subtitle;
+
+      homeView.classList.add("hidden");
+      chatView.classList.remove("hidden");
+
+      renderChat();
+      updateInputArea();
+      updateSurveyStatus();
+    }
+
+    function goBack() {
+      selectedScenario = null;
+      roundIndex = 0;
+      messages = [];
+      homeView.classList.remove("hidden");
+      chatView.classList.add("hidden");
+    }
+
+    function handleNextRound() {
+      if (!selectedScenario) return;
+      if (roundIndex >= selectedScenario.rounds.length) return;
+
+      const current = selectedScenario.rounds[roundIndex];
+      messages.push({ role: "user", text: current.user });
+      messages.push({ role: "system", text: current.system, note: current.note || "" });
+      roundIndex += 1;
+
+      renderChat();
+      updateInputArea();
+      updateSurveyStatus();
+    }
+
+    function renderChat() {
+      chatBox.innerHTML = "";
+
+      if (messages.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-tip";
+        empty.textContent = "点击下方发送按钮，开始按实验轮次展示对话";
+        chatBox.appendChild(empty);
+      } else {
+        messages.forEach((msg) => {
+          const row = document.createElement("div");
+          row.className = `message-row ${msg.role === "user" ? "right" : "left"}`;
+
+          const wrapper = document.createElement("div");
+
+          const bubble = document.createElement("div");
+          bubble.className = `bubble ${msg.role === "user" ? "user-bubble" : "system-bubble"}`;
+          bubble.textContent = msg.text;
+          wrapper.appendChild(bubble);
+
+          if (msg.note) {
+            const note = document.createElement("div");
+            note.className = "note";
+            note.textContent = msg.note;
+            wrapper.appendChild(note);
+          }
+
+          row.appendChild(wrapper);
+          chatBox.appendChild(row);
+        });
+      }
+
+      progressText.textContent = `当前进度：${roundIndex}/${selectedScenario.rounds.length}`;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    }
+
+    function updateInputArea() {
+      const isFinished = roundIndex >= selectedScenario.rounds.length;
+
+      if (!isFinished) {
+        nextPrompt.value = selectedScenario.rounds[roundIndex].user;
+        sendBtn.disabled = false;
+      } else {
+        nextPrompt.value = "对话已完成，请继续填写下方问卷";
+        sendBtn.disabled = true;
+      }
+    }
+
+    function updateSurveyStatus() {
+      const isFinished = roundIndex >= selectedScenario.rounds.length;
+      surveyStatus.className = `status ${isFinished ? "done" : "waiting"}`;
+      surveyStatus.textContent = isFinished
+        ? "对话已完成，可继续填写问卷"
+        : "建议先完成全部对话，再填写问卷";
+    }
+
+    backBtn.addEventListener("click", goBack);
+    sendBtn.addEventListener("click", handleNextRound);
+
+    renderCards();
+  </script>
+</body>
+</html>
