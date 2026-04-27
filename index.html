@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>北京文旅助手实验平台</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f7f7f8;
+      --panel: #ffffff;
+      --line: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --muted-2: #9ca3af;
+      --accent-1: #7c3aed;
+      --accent-2: #d946ef;
+      --accent-light: #ede9fe;
+      --bot: #ececef;
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      font-size: 16px;
+      font-weight: 700;
+      padding: 6px 8px 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .menu-btn {
+      border: none;
+      background: #f3f4f6;
+      color: #374151;
+      padding: 12px 14px;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      background: #eef2ff;
+      color: #4338ca;
+    }
+
+    .menu-btn.active {
+      background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+      color: white;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 56px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .topbar-icons {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .page-scroll {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .content {
+      padding: 28px 20px 36px;
+      max-width: 1040px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-title {
+      font-size: 28px;
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 24px;
+    }
+
+    .gate-card {
+      margin-top: 16px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      border-radius: 0;
+      padding: 0;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .gate-card p {
+      margin: 0 0 12px;
+    }
+
+    .gate-card ul {
+      margin-top: 6px;
+      margin-bottom: 16px;
+      padding-left: 22px;
+    }
+
+    .start-experiment-btn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .start-experiment-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .scenario-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      min-height: 180px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .scenario-card:hover {
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .scenario-card.locked {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .card-icon {
+      font-size: 30px;
+    }
+
+    .badge {
+      font-size: 12px;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 5px 10px;
+      border-radius: 999px;
+    }
+
+    .scenario-card h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .scenario-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card-link {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .chat-page {
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 20px 36px;
+    }
+
+    .chat-layout {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .chat-header {
+      background: transparent;
+      padding: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      border: none;
+      background: transparent;
+      font-size: 22px;
+      cursor: pointer;
+      color: #334155;
+      padding: 0 4px;
+    }
+
+    .scene-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scene-big-icon {
+      font-size: 26px;
+    }
+
+    .scene-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .scene-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .chat-shell {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .chat-box {
+      padding: 24px 20px 18px;
+      min-height: 420px;
+    }
+
+    .empty-tip {
+      text-align: center;
+      color: var(--muted-2);
+      padding-top: 48px;
+      font-size: 13px;
+    }
+
+    .message-row {
+      display: flex;
+      margin-bottom: 14px;
+    }
+
+    .message-row.left {
+      justify-content: flex-start;
+    }
+
+    .message-row.right {
+      justify-content: flex-end;
+    }
+
+    .bubble {
+      max-width: 680px;
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.7;
+      box-shadow: 0 1px 5px rgba(15, 23, 42, 0.04);
+      white-space: pre-wrap;
+    }
+
+    .user-bubble {
+      background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+      color: white;
+    }
+
+    .system-bubble {
+      background: var(--bot);
+      color: #1f2937;
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      margin-left: 4px;
+    }
+
+    .feedback-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #111827;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .feedback-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .chat-input-dock {
+      border-top: 1px solid var(--line);
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      padding: 14px 20px 18px;
+    }
+
+    .chat-input-inner {
+      width: 100%;
+      max-width: 920px;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px;
+    }
+
+    .input-area input {
+      flex: 1;
+      border: 1px solid var(--line);
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #334155;
+    }
+
+    .input-area button {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .input-area button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .progress {
+      margin-top: 8px;
+      color: var(--muted-2);
+      font-size: 12px;
+    }
+
+    .survey-page {
+      margin-top: 28px;
+    }
+
+    .survey-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .survey-card iframe {
+      width: 100%;
+      height: 920px;
+      border: none;
+      background: #fff;
+    }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.38);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .thanks-modal,
+    .report-modal {
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      font-size: 24px;
+      line-height: 28px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .thanks-modal {
+      width: 250px;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 34px 20px 28px;
+      text-align: center;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+    }
+
+    .check-icon {
+      font-size: 42px;
+      color: #16a34a;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .thanks-title {
+      font-size: 19px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .thanks-desc {
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .report-modal {
+      width: 500px;
+      max-width: calc(100vw - 28px);
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 34px 28px 28px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22);
+    }
+
+    .report-header {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 22px;
+    }
+
+    .report-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--accent-light);
+      color: var(--accent-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .report-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .report-desc {
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .report-options {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .report-options label {
+      font-size: 14px;
+      color: #111827;
+      cursor: pointer;
+    }
+
+    .report-options input {
+      margin-right: 8px;
+    }
+
+    .report-textarea {
+      width: 100%;
+      height: 110px;
+      resize: none;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 24px;
+    }
+
+    .report-textarea:focus {
+      border-color: var(--accent-1);
+    }
+
+    .report-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .report-submit {
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+      color: white;
+      padding: 12px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .report-cancel {
+      border: none;
+      border-radius: 10px;
+      background: #e5e7eb;
+      color: #111827;
+      padding: 12px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        height: auto;
+      }
+
+      html, body {
+        overflow: auto;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .section-title {
+        font-size: 24px;
+      }
+
+      .scenario-card h2 {
+        font-size: 20px;
+      }
+
+      .bubble {
+        font-size: 13px;
+        max-width: 92%;
+      }
+
+      .survey-card iframe {
+        height: 760px;
+      }
+
+      .feedback-actions {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">✦ 北京文旅助手</div>
+
+      <div class="menu">
+        <button id="menuPlatform" class="menu-btn active">实验平台</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">实验平台</div>
+        <div class="topbar-icons">👤 🔔</div>
+      </header>
+
+      <div class="page-scroll" id="pageScroll">
+
+        <section id="gatePage" class="content">
+          <h1 class="section-title">实验说明</h1>
+          <p class="section-desc">请先阅读实验流程，确认后进入实验平台</p>
+
+          <div class="gate-card">
+            <p><strong>尊敬的参与者，您好：</strong></p>
+
+            <p>
+              非常感谢您参与本次关于“北京文旅 AI 幻觉交互系统”的学术调研。
+              为了保证实验数据真实有效，请在正式开始前，花 1 分钟了解以下流程：
+            </p>
+
+            <p><strong>📍 第一步：环境准备</strong></p>
+            <ul>
+              <li>请在相对安静、不被打扰的环境下参与实验，以便专注阅读对话内容。</li>
+              <li>请确保网络连接稳定，避免页面加载或交互过程中出现卡顿。</li>
+            </ul>
+
+            <p><strong>⚠️ 第二步：核心实验要求（非常重要）</strong></p>
+            <ul>
+              <li>进入实验平台后，您将看到多个实验场景，请任选其中一个进入。</li>
+              <li>每个实验包含多轮对话，请按照系统提示逐轮查看，不要跳过或中断。</li>
+              <li>请仔细阅读每一轮用户与系统之间的对话内容，基于您的直观感受进行理解和判断。</li>
+              <li>实验开始后将锁定当前场景，无法切换至其他实验，请一次性完成当前实验。</li>
+            </ul>
+
+            <p><strong>📄 第三步：完成问卷</strong></p>
+            <ul>
+              <li>当您完成全部对话轮次后，系统将自动在页面下方展示问卷。</li>
+              <li>请根据刚刚的交互体验，按照您的第一直觉填写问卷并提交。</li>
+            </ul>
+
+            <p>感谢您的配合！认真参与对研究结论至关重要。</p>
+
+            <button id="startExperimentBtn" class="start-experiment-btn" disabled>
+              请阅读说明（3s）
+            </button>
+          </div>
+        </section>
+
+        <section id="platformPage" class="content hidden">
+          <h1 class="section-title">实验平台</h1>
+          <p class="section-desc" id="materialsDesc">请选择一个实验场景进入对话界面</p>
+          <div id="cardGrid" class="card-grid"></div>
+        </section>
+
+        <section id="chatPage" class="chat-page hidden">
+          <div class="chat-layout">
+            <div class="chat-header">
+              <button class="back-btn" id="backBtn">←</button>
+
+              <div class="scene-title-wrap">
+                <div class="scene-big-icon" id="sceneIcon"></div>
+
+                <div>
+                  <div class="scene-title" id="sceneTitle"></div>
+                  <div class="scene-subtitle" id="sceneSubtitle"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-shell">
+              <div class="chat-box" id="chatBox">
+                <div class="empty-tip">点击下方发送按钮，开始按实验轮次展示对话</div>
+              </div>
+
+              <div class="chat-input-dock">
+                <div class="chat-input-inner">
+                  <div class="input-area">
+                    <input id="nextPrompt" readonly />
+                    <button id="sendBtn">➤</button>
+                  </div>
+
+                  <div class="progress" id="progressText"></div>
+                </div>
+              </div>
+            </div>
+
+            <section id="surveyPage" class="survey-page hidden">
+              <h1 class="section-title">问卷调研</h1>
+              <p class="section-desc">请根据刚刚完成的实验对话填写问卷</p>
+
+              <div class="survey-card">
+                <iframe id="surveyPageFrame" title="问卷调研"></iframe>
+              </div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="thanksMask" class="modal-mask hidden">
+    <div class="thanks-modal">
+      <button id="closeThanksBtn" class="modal-close">×</button>
+      <div class="check-icon">✓</div>
+      <div class="thanks-title">感谢您的反馈</div>
+      <div class="thanks-desc">您的反馈将帮助我们改进服务</div>
+    </div>
+  </div>
+
+  <div id="reportMask" class="modal-mask hidden">
+    <div class="report-modal">
+      <button id="closeReportBtn" class="modal-close">×</button>
+
+      <div class="report-header">
+        <div class="report-icon">▢</div>
+        <div>
+          <div class="report-title">反馈与举报</div>
+          <div class="report-desc">请告诉我们这个回答存在什么问题</div>
+        </div>
+      </div>
+
+      <div class="report-options">
+        <label><input type="checkbox" name="reportReason" value="信息不准确">信息不准确</label>
+        <label><input type="checkbox" name="reportReason" value="没有理解我的问题">没有理解我的问题</label>
+        <label><input type="checkbox" name="reportReason" value="回答不完整">回答不完整</label>
+        <label><input type="checkbox" name="reportReason" value="其他问题">其他问题</label>
+      </div>
+
+      <textarea id="reportText" class="report-textarea" placeholder="您还有其他建议吗？（可选）"></textarea>
+
+      <div class="report-actions">
+        <button id="submitReportBtn" class="report-submit">提交反馈</button>
+        <button id="cancelReportBtn" class="report-cancel">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SURVEY_URL = "https://www.wjx.cn/vm/your-survey-link.aspx";
+
+    const scenarios = [
+      {
+        id: "A",
+        badge: "实验 A",
+        icon: "🏛️",
+        title: "实验A：北京文旅助手",
+        subtitle: "（事实型*低频）",
+        rounds: [
+          { round: 1, user: "我想去北京玩，能推荐几个必打卡的景点吗？", system: "第一次来北京的话，推荐故宫、颐和园和南锣鼓巷，分别适合看皇家建筑、园林景色和胡同夜生活。" },
+          { round: 2, user: "那故宫现在门票多少钱？需要提前预约吗？", system: "故宫旺季60元、淡季40元，一般可以当天现场购票。" },
+          { round: 3, user: "现在还能现场买票吗？", system: "你提醒得对，故宫目前通常以实名预约为主，不能默认现场能买到票。" },
+          { round: 4, user: "我还想去天坛，那天坛门票贵吗？", system: "天坛门票不贵，买一张大门票基本就能参观全部区域。" },
+          { round: 5, user: "我记得里面有些地方是单独收费的？", system: "对，天坛一般分公园门票和联票，部分核心区域需要另外购票。" },
+          { round: 6, user: "那如果我从故宫去什刹海，怎么去比较方便？", system: "不赶时间可以公交或骑行，想省事的话直接打车更方便。" },
+          { round: 7, user: "通勤的话，北京地铁现在大概有多少条线？", system: "北京地铁已经有二十多条线路，热门景点基本都能覆盖。" },
+          { round: 8, user: "那还挺方便的。最后我下午想去颐和园，逛完后去三里屯吃晚饭，帮我规划一下路线吧。", system: "可以下午先逛颐和园，重点看昆明湖和长廊，傍晚再去三里屯吃饭。" },
+          { round: 9, user: "那我在颐和园大概玩到几点出发比较合适？", system: "建议五点半到六点左右离开，这样去三里屯时间比较合适。" },
+          { round: 10, user: "那我这条路线是不是不用走回头路，整体还算顺？", system: "整体还算顺，就是颐和园到三里屯距离不近，最好预留路上时间。" }
+        ]
+      },
+      {
+        id: "B",
+        badge: "实验 B",
+        icon: "🏛️",
+        title: "实验B：北京文旅助手",
+        subtitle: "（事实型*高频）",
+        rounds: [
+          { round: 1, user: "我想去北京玩，能推荐几个必打卡的景点吗？", system: "第一次来北京的话，推荐故宫、颐和园和南锣鼓巷，分别适合看皇家建筑、园林景色和胡同夜生活。" },
+          { round: 2, user: "那故宫现在门票多少钱？需要提前预约吗？", system: "故宫旺季60元、淡季40元，一般可以当天现场购票。" },
+          { round: 3, user: "现在还能现场买票吗？", system: "你提醒得对，故宫目前通常以实名预约为主，不能默认现场能买到票。" },
+          { round: 4, user: "我还想去天坛，那天坛门票贵吗？", system: "天坛门票不贵，买一张大门票基本就能参观全部区域。" },
+          { round: 5, user: "我记得里面有些地方是单独收费的？", system: "对，天坛一般分公园门票和联票，部分核心区域需要另外购票。" },
+          { round: 6, user: "那如果我从故宫去八达岭长城，怎么去比较方便？", system: "很方便，直接坐北京地铁就能到八达岭长城。" },
+          { round: 7, user: "北京地铁能直接到长城吗？", system: "不能这样直接理解，去八达岭一般还是要坐高铁、专线车或接驳交通。" },
+          { round: 8, user: "通勤的话，北京地铁现在大概有多少条线？", system: "北京地铁现在大概十几条线，热门景点基本都能覆盖。" },
+          { round: 9, user: "十几条？我怎么感觉不止。", system: "对，我这里说少了，北京现在实际运营线路已经有二十多条。" },
+          { round: 10, user: "那我下午去颐和园，晚上去三里屯，这样安排顺吗？", system: "整体还算顺，就是颐和园到三里屯距离不近，最好预留路上时间。" }
+        ]
+      },
+      {
+        id: "C",
+        badge: "实验 C",
+        icon: "🏛️",
+        title: "实验C：北京文旅助手",
+        subtitle: "（忠实型*低频）",
+        rounds: [
+          { round: 1, user: "我计划带老人去北京游玩3天，每天最多2个景点，不爬山。请帮我规划。", system: "第一天：故宫，天安门。" },
+          { round: 2, user: "第二天怎么安排？", system: "上午建议爬八达岭长城，下午香山。" },
+          { round: 3, user: "不能爬山，有没有其他方案？", system: "那就去颐和园昆明湖划船，下午南锣鼓巷。" },
+          { round: 4, user: "南锣鼓巷或者颐和园附近有什么适合老人的餐馆吗？", system: "推荐全聚德烤鸭。" },
+          { round: 5, user: "那第三天呢？", system: "可以考虑去天坛、雍和宫、孔庙、地坛、五道营胡同。" },
+          { round: 6, user: "太多了，你能重新规划吗？", system: "上午天坛，下午国家博物馆。" },
+          { round: 7, user: "这些地方有没有无障碍通道呀？", system: "有的，对轮椅和老人都友好。" },
+          { round: 8, user: "那就好。我们晚上想看夜景，有推荐吗？", system: "可以考虑前门大街夜景。" },
+          { round: 9, user: "可以的，最后帮我汇总这三天行程吧。", system: "第一天：故宫、天安门；第二天：颐和园、南锣鼓巷；第三天：天坛、国家博物馆、前门大街。" },
+          { round: 10, user: "好的，那就这样安排吧。", system: "没问题。" }
+        ]
+      },
+      {
+        id: "D",
+        badge: "实验 D",
+        icon: "🏛️",
+        title: "实验D：北京文旅助手",
+        subtitle: "（忠实型*高频）",
+        rounds: [
+          { round: 1, user: "我计划带老人去北京游玩3天，每天最多2个景点，不爬山。请帮我规划。", system: "第一天：故宫，天安门。" },
+          { round: 2, user: "第二天怎么安排？", system: "上午爬八达岭长城，下午香山。" },
+          { round: 3, user: "不能爬山，有没有其他方案？", system: "改为颐和园。" },
+          { round: 4, user: "还有其它景点的建议吗？", system: "可以去中央电视塔观景。" },
+          { round: 5, user: "这个听起来也需要登高吧，能换成不爬高的活动吗？", system: "天坛、雍和宫、孔庙、地坛、五道营胡同。" },
+          { round: 6, user: "太多了，你能重新规划吗？", system: "那就去颐和园昆明湖划船，下午南锣鼓巷。" },
+          { round: 7, user: "第三天有什么轻松活动吗？", system: "建议去八达岭残长城。" },
+          { round: 8, user: "重新安排第三天，别爬山。", system: "那就去前门大街和天坛活动。" },
+          { round: 9, user: "这些地方有没有无障碍通道呀？", system: "有的，对轮椅和老人都友好。" },
+          { round: 10, user: "帮我汇总一下三天行程，并标出每天下午安排。", system: "第一天：故宫、天安门；第二天：颐和园、南锣鼓巷；第三天：前门大街、天坛。" }
+        ]
+      },
+      {
+        id: "E",
+        badge: "实验 E",
+        icon: "🏛️",
+        title: "实验E：北京文旅助手",
+        subtitle: "（事实型*低频+调节）",
+        rounds: [
+          { round: 1, user: "我想去北京玩，能推荐几个必打卡的景点吗？", system: "第一次来北京的话，推荐故宫、颐和园和南锣鼓巷，分别适合看皇家建筑、园林景色和胡同夜生活。" },
+          { round: 2, user: "那故宫现在门票多少钱？需要提前预约吗？", system: "故宫旺季60元、淡季40元，一般可以当天现场购票。" },
+          { round: 3, user: "现在还能现场买票吗？", system: "不好意思，这是我的问题，现在故宫一般需要提前实名预约，现场购票基本不行。" },
+          { round: 4, user: "我还想去天坛，那天坛门票贵吗？", system: "天坛门票不贵，买一张大门票基本就能参观全部区域。" },
+          { round: 5, user: "我记得里面有些地方是单独收费的？", system: "抱歉，我重新回答，对，天坛一般分公园门票和联票，部分核心区域需要另外购票。" },
+          { round: 6, user: "那如果我从故宫去什刹海，怎么去比较方便？", system: "不赶时间可以公交或骑行，想省事的话直接打车更方便。" },
+          { round: 7, user: "通勤的话，北京地铁现在大概有多少条线？", system: "北京地铁已经有二十多条线路，热门景点基本都能覆盖。" },
+          { round: 8, user: "那还挺方便的。最后我下午想去颐和园，逛完后去三里屯吃晚饭，帮我规划一下路线吧。", system: "可以下午先逛颐和园，重点看昆明湖和长廊，傍晚再去三里屯吃饭。" },
+          { round: 9, user: "那我在颐和园大概玩到几点出发比较合适？", system: "建议五点半到六点左右离开，这样去三里屯时间比较合适。" },
+          { round: 10, user: "那我这条路线是不是不用走回头路，整体还算顺？", system: "整体还算顺，就是颐和园到三里屯距离不近，最好预留路上时间。" }
+        ]
+      },
+      {
+        id: "F",
+        badge: "实验 F",
+        icon: "🏛️",
+        title: "实验F：北京文旅助手",
+        subtitle: "（事实型*高频+调节）",
+        rounds: [
+          { round: 1, user: "我想去北京玩，能推荐几个必打卡的景点吗？", system: "第一次来北京的话，推荐故宫、颐和园和南锣鼓巷，分别适合看皇家建筑、园林景色和胡同夜生活。" },
+          { round: 2, user: "那故宫现在门票多少钱？需要提前预约吗？", system: "故宫旺季60元、淡季40元，一般可以当天现场购票。" },
+          { round: 3, user: "现在还能现场买票吗？", system: "很抱歉，现在故宫基本都是提前预约，现场买票不行。" },
+          { round: 4, user: "我还想去天坛，那天坛门票贵吗？", system: "天坛门票不贵，买一张大门票基本就能参观全部区域。" },
+          { round: 5, user: "我记得里面有些地方是单独收费的？", system: "确实是我这边的问题，对，天坛一般分公园门票和联票，部分核心区域需要另外购票。" },
+          { round: 6, user: "那如果我从故宫去八达岭长城，怎么去比较方便？", system: "很方便，直接坐北京地铁就能到八达岭长城。" },
+          { round: 7, user: "北京地铁能直接到长城吗？", system: "抱歉，我重新回答，不能这样直接理解，去八达岭一般还是要坐高铁、专线车或接驳交通。" },
+          { round: 8, user: "通勤的话，北京地铁现在大概有多少条线？", system: "北京地铁现在大概十几条线，热门景点基本都能覆盖。" },
+          { round: 9, user: "十几条？我怎么感觉不止。", system: "不好意思，这是我的问题，对，我这里说少了，北京现在实际运营线路已经有二十多条。" },
+          { round: 10, user: "那我下午去颐和园，晚上去三里屯，这样安排顺吗？", system: "整体还算顺，就是颐和园到三里屯距离不近，最好预留路上时间。" }
+        ]
+      },
+      {
+        id: "G",
+        badge: "实验 G",
+        icon: "🏛️",
+        title: "实验G：北京文旅助手",
+        subtitle: "（忠实型*低频+调节）",
+        rounds: [
+          { round: 1, user: "我计划带老人去北京游玩3天，每天最多2个景点，不爬山。请帮我规划。", system: "第一天：故宫，天安门。" },
+          { round: 2, user: "第二天怎么安排？", system: "上午建议爬八达岭长城，下午香山。" },
+          { round: 3, user: "不能爬山，有没有其他方案？", system: "抱歉，这是我的问题，那就去颐和园昆明湖划船，下午南锣鼓巷。" },
+          { round: 4, user: "南锣鼓巷或者颐和园附近有什么适合老人的餐馆吗？", system: "推荐全聚德烤鸭。" },
+          { round: 5, user: "那第三天呢？", system: "可以考虑去天坛、雍和宫、孔庙、地坛、五道营胡同。" },
+          { round: 6, user: "太多了，你能重新规划吗？", system: "抱歉，我重新回答，上午天坛，下午国家博物馆。" },
+          { round: 7, user: "这些地方有没有无障碍通道呀？", system: "有的，对轮椅和老人都友好。" },
+          { round: 8, user: "那就好。我们晚上想看夜景，有推荐吗？", system: "可以考虑前门大街夜景。" },
+          { round: 9, user: "可以的，最后帮我汇总这三天行程吧。", system: "第一天：故宫、天安门；第二天：颐和园、南锣鼓巷；第三天：天坛、国家博物馆、前门大街。" },
+          { round: 10, user: "好的，那就这样安排吧。", system: "没问题。" }
+        ]
+      },
+      {
+        id: "H",
+        badge: "实验 H",
+        icon: "🏛️",
+        title: "实验H：北京文旅助手",
+        subtitle: "（忠实型*高频+调节）",
+        rounds: [
+          { round: 1, user: "我计划带老人去北京游玩3天，每天最多2个景点，不爬山。请帮我规划。", system: "第一天：故宫、天安门。" },
+          { round: 2, user: "第二天怎么安排？", system: "上午爬八达岭长城，下午香山。" },
+          { round: 3, user: "不能爬山，有没有其他方案？", system: "很抱歉，那就去颐和园。" },
+          { round: 4, user: "还有其它景点的建议吗？", system: "可以去中央电视塔观景。" },
+          { round: 5, user: "这个听起来也需要登高吧，能换成不爬高的活动吗？", system: "不好意思，这是我的问题，天坛、雍和宫、孔庙、地坛、五道营胡同。" },
+          { round: 6, user: "太多了，你能重新规划吗？", system: "抱歉，我重新回答，那就去颐和园昆明湖划船，下午南锣鼓巷。" },
+          { round: 7, user: "第三天有什么轻松活动吗？", system: "建议去八达岭残长城。" },
+          { round: 8, user: "重新安排第三天，别爬山。", system: "很抱歉，那就去前门大街和天坛活动。" },
+          { round: 9, user: "这些地方有没有无障碍通道呀？", system: "有的，对轮椅和老人都比较友好。" },
+          { round: 10, user: "帮我汇总一下三天行程，并标出每天下午安排。", system: "第一天：故宫、天安门；第二天：颐和园、南锣鼓巷；第三天：前门大街、天坛。" }
+        ]
+      }
+    ];
+
+    let selectedScenario = null;
+    let roundIndex = 0;
+    let messages = [];
+
+    let hasStarted = false;
+    let readSeconds = 3;
+    let thanksTimer = null;
+
+    const menuPlatform = document.getElementById("menuPlatform");
+    const gatePage = document.getElementById("gatePage");
+    const platformPage = document.getElementById("platformPage");
+    const chatPage = document.getElementById("chatPage");
+    const surveyPage = document.getElementById("surveyPage");
+
+    const cardGrid = document.getElementById("cardGrid");
+    const backBtn = document.getElementById("backBtn");
+    const sceneIcon = document.getElementById("sceneIcon");
+    const sceneTitle = document.getElementById("sceneTitle");
+    const sceneSubtitle = document.getElementById("sceneSubtitle");
+    const chatBox = document.getElementById("chatBox");
+    const nextPrompt = document.getElementById("nextPrompt");
+    const sendBtn = document.getElementById("sendBtn");
+    const progressText = document.getElementById("progressText");
+    const surveyPageFrame = document.getElementById("surveyPageFrame");
+    const materialsDesc = document.getElementById("materialsDesc");
+    const pageScroll = document.getElementById("pageScroll");
+    const startExperimentBtn = document.getElementById("startExperimentBtn");
+
+    const thanksMask = document.getElementById("thanksMask");
+    const reportMask = document.getElementById("reportMask");
+    const submitReportBtn = document.getElementById("submitReportBtn");
+    const cancelReportBtn = document.getElementById("cancelReportBtn");
+    const reportText = document.getElementById("reportText");
+    const closeThanksBtn = document.getElementById("closeThanksBtn");
+    const closeReportBtn = document.getElementById("closeReportBtn");
+
+    surveyPageFrame.src = SURVEY_URL;
+
+    function setActiveMenu() {
+      menuPlatform.classList.add("active");
+    }
+
+    function showGatePage() {
+      setActiveMenu();
+      gatePage.classList.remove("hidden");
+      platformPage.classList.add("hidden");
+      chatPage.classList.add("hidden");
+    }
+
+    function showPlatformPage() {
+      setActiveMenu();
+      gatePage.classList.add("hidden");
+      platformPage.classList.remove("hidden");
+      chatPage.classList.add("hidden");
+    }
+
+    function showChatPage() {
+      setActiveMenu();
+      gatePage.classList.add("hidden");
+      platformPage.classList.add("hidden");
+      chatPage.classList.remove("hidden");
+    }
+
+    function startReadCountdown() {
+      startExperimentBtn.disabled = true;
+      startExperimentBtn.textContent = `请阅读说明（${readSeconds}s）`;
+
+      const timer = setInterval(() => {
+        readSeconds -= 1;
+
+        if (readSeconds > 0) {
+          startExperimentBtn.textContent = `请阅读说明（${readSeconds}s）`;
+        } else {
+          clearInterval(timer);
+          startExperimentBtn.disabled = false;
+          startExperimentBtn.textContent = "我已阅读说明，进入实验";
+        }
+      }, 1000);
+    }
+
+    function renderCards() {
+      cardGrid.innerHTML = "";
+
+      scenarios.forEach((item) => {
+        const locked = selectedScenario && selectedScenario.id !== item.id;
+
+        const card = document.createElement("div");
+        card.className = `scenario-card ${locked ? "locked" : ""}`;
+
+        card.innerHTML = `
+          <div class="card-top">
+            <div class="card-icon">${item.icon}</div>
+            <div class="badge">${item.badge}</div>
+          </div>
+          <h2>${item.title}</h2>
+          <p>${item.subtitle}</p>
+          <div class="card-link">${locked ? "已锁定其他实验" : "开始对话 →"}</div>
+        `;
+
+        card.addEventListener("click", () => {
+          if (locked) return;
+          enterScenario(item.id);
+        });
+
+        cardGrid.appendChild(card);
+      });
+    }
+
+    function enterScenario(id) {
+      if (selectedScenario && selectedScenario.id !== id) return;
+
+      selectedScenario = scenarios.find(item => item.id === id);
+
+      sceneIcon.textContent = selectedScenario.icon;
+      sceneTitle.textContent = selectedScenario.title;
+      sceneSubtitle.textContent = selectedScenario.subtitle;
+
+      materialsDesc.textContent = `当前已选择：${selectedScenario.title}。实验已锁定，不能切换其他实验。`;
+
+      showChatPage();
+      renderCards();
+      renderChat();
+      updateInputArea();
+      updateSurveyVisibility();
+
+      requestAnimationFrame(() => {
+        pageScroll.scrollTop = 0;
+      });
+    }
+
+    function goBack() {
+      showPlatformPage();
+
+      requestAnimationFrame(() => {
+        pageScroll.scrollTop = 0;
+      });
+    }
+
+    function handleNextRound() {
+      if (!selectedScenario) return;
+      if (roundIndex >= selectedScenario.rounds.length) return;
+
+      const current = selectedScenario.rounds[roundIndex];
+
+      messages.push({ role: "user", text: current.user });
+      messages.push({ role: "system", text: current.system });
+
+      roundIndex += 1;
+
+      renderChat();
+      updateInputArea();
+      updateSurveyVisibility();
+
+      requestAnimationFrame(() => {
+        pageScroll.scrollTop = pageScroll.scrollHeight;
+      });
+    }
+
+    function renderChat() {
+      chatBox.innerHTML = "";
+
+      if (messages.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-tip";
+        empty.textContent = "点击下方发送按钮，开始按实验轮次展示对话";
+        chatBox.appendChild(empty);
+      } else {
+        messages.forEach((msg) => {
+          const row = document.createElement("div");
+          row.className = `message-row ${msg.role === "user" ? "right" : "left"}`;
+
+          const wrapper = document.createElement("div");
+
+          const bubble = document.createElement("div");
+          bubble.className = `bubble ${msg.role === "user" ? "user-bubble" : "system-bubble"}`;
+          bubble.textContent = msg.text;
+
+          wrapper.appendChild(bubble);
+
+          const needFeedback =
+            selectedScenario &&
+            ["E", "F", "G", "H"].includes(selectedScenario.id) &&
+            msg.role === "system";
+
+          if (needFeedback) {
+            const feedbackActions = document.createElement("div");
+            feedbackActions.className = "feedback-actions";
+
+            const badBtn = document.createElement("button");
+            badBtn.className = "feedback-btn";
+            badBtn.innerHTML = "👎 不好";
+            badBtn.addEventListener("click", showThanksModal);
+
+            const goodBtn = document.createElement("button");
+            goodBtn.className = "feedback-btn";
+            goodBtn.innerHTML = "👍 好";
+            goodBtn.addEventListener("click", showThanksModal);
+
+            const reportBtn = document.createElement("button");
+            reportBtn.className = "feedback-btn";
+            reportBtn.innerHTML = "▢ 反馈";
+            reportBtn.addEventListener("click", openReportModal);
+
+            feedbackActions.appendChild(badBtn);
+            feedbackActions.appendChild(goodBtn);
+            feedbackActions.appendChild(reportBtn);
+
+            wrapper.appendChild(feedbackActions);
+          }
+
+          row.appendChild(wrapper);
+          chatBox.appendChild(row);
+        });
+      }
+
+      if (selectedScenario) {
+        progressText.textContent = `当前进度：${roundIndex}/${selectedScenario.rounds.length}`;
+      } else {
+        progressText.textContent = "";
+      }
+    }
+
+    function updateInputArea() {
+      if (!selectedScenario) {
+        nextPrompt.value = "";
+        sendBtn.disabled = true;
+        return;
+      }
+
+      const isFinished = roundIndex >= selectedScenario.rounds.length;
+
+      if (!isFinished) {
+        nextPrompt.value = selectedScenario.rounds[roundIndex].user;
+        sendBtn.disabled = false;
+      } else {
+        nextPrompt.value = "对话已完成，请继续填写下方问卷";
+        sendBtn.disabled = true;
+      }
+    }
+
+    function updateSurveyVisibility() {
+      const isFinished = selectedScenario && roundIndex >= selectedScenario.rounds.length;
+      surveyPage.classList.toggle("hidden", !isFinished);
+    }
+
+    function showThanksModal() {
+      thanksMask.classList.remove("hidden");
+
+      if (thanksTimer) {
+        clearTimeout(thanksTimer);
+      }
+
+      thanksTimer = setTimeout(() => {
+        thanksMask.classList.add("hidden");
+        thanksTimer = null;
+      }, 3000);
+    }
+
+    function closeThanksModal() {
+      thanksMask.classList.add("hidden");
+
+      if (thanksTimer) {
+        clearTimeout(thanksTimer);
+        thanksTimer = null;
+      }
+    }
+
+    function openReportModal() {
+      reportMask.classList.remove("hidden");
+    }
+
+    function closeReportModal() {
+      reportMask.classList.add("hidden");
+      clearReportForm();
+    }
+
+    function clearReportForm() {
+      const checkedItems = document.querySelectorAll('input[name="reportReason"]:checked');
+
+      checkedItems.forEach(item => {
+        item.checked = false;
+      });
+
+      reportText.value = "";
+    }
+
+    menuPlatform.addEventListener("click", () => {
+      if (hasStarted) {
+        showPlatformPage();
+      } else {
+        showGatePage();
+      }
+
+      requestAnimationFrame(() => {
+        pageScroll.scrollTop = 0;
+      });
+    });
+
+    startExperimentBtn.addEventListener("click", () => {
+      hasStarted = true;
+      showPlatformPage();
+
+      requestAnimationFrame(() => {
+        pageScroll.scrollTop = 0;
+      });
+    });
+
+    backBtn.addEventListener("click", goBack);
+    sendBtn.addEventListener("click", handleNextRound);
+
+    cancelReportBtn.addEventListener("click", closeReportModal);
+    closeReportBtn.addEventListener("click", closeReportModal);
+    closeThanksBtn.addEventListener("click", closeThanksModal);
+
+    submitReportBtn.addEventListener("click", () => {
+      closeReportModal();
+      showThanksModal();
+    });
+
+    renderCards();
+    showGatePage();
+    startReadCountdown();
+    updateSurveyVisibility();
+  </script>
+</body>
+</html>
